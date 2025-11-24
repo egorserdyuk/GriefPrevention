@@ -126,6 +126,7 @@ public class GriefPrevention extends JavaPlugin
     public boolean config_claims_enderPearlsRequireAccessTrust;        //whether teleporting into a claim with a pearl requires access trust
     public boolean config_claims_raidTriggersRequireBuildTrust;      //whether raids are triggered by a player that doesn't have build permission in that claim
     public int config_claims_maxClaimsPerPlayer;                    //maximum number of claims per player
+    public int config_claims_maxClaimsPerRegularPlayer;             //maximum number of claims per regular player
     public boolean config_claims_villagerTradingRequiresTrust;      //whether trading with a claimed villager requires permission
 
     public int config_claims_initialBlocks;                            //the number of claim blocks a new player starts with
@@ -593,6 +594,7 @@ public class GriefPrevention extends JavaPlugin
         this.config_claims_allowTrappedInAdminClaims = config.getBoolean("GriefPrevention.Claims.AllowTrappedInAdminClaims", false);
 
         this.config_claims_maxClaimsPerPlayer = config.getInt("GriefPrevention.Claims.MaximumNumberOfClaimsPerPlayer", 0);
+        this.config_claims_maxClaimsPerRegularPlayer = config.getInt("GriefPrevention.Claims.MaximumNumberOfClaimsPerRegularPlayer", 0);
         this.config_claims_villagerTradingRequiresTrust = config.getBoolean("GriefPrevention.Claims.VillagerTradingRequiresPermission", true);
         String accessTrustSlashCommands = config.getString("GriefPrevention.Claims.CommandsRequiringAccessTrust", "/sethome");
         this.config_claims_supplyPlayerManual = config.getBoolean("GriefPrevention.Claims.DeliverManuals", true);
@@ -750,6 +752,7 @@ public class GriefPrevention extends JavaPlugin
         outConfig.set("GriefPrevention.Claims.Expiration.AllClaims.ExceptWhenOwnerHasBonusClaimBlocks", this.config_claims_expirationExemptionBonusBlocks);
         outConfig.set("GriefPrevention.Claims.AllowTrappedInAdminClaims", this.config_claims_allowTrappedInAdminClaims);
         outConfig.set("GriefPrevention.Claims.MaximumNumberOfClaimsPerPlayer", this.config_claims_maxClaimsPerPlayer);
+        outConfig.set("GriefPrevention.Claims.MaximumNumberOfClaimsPerRegularPlayer", this.config_claims_maxClaimsPerRegularPlayer);
         outConfig.set("GriefPrevention.Claims.VillagerTradingRequiresPermission", this.config_claims_villagerTradingRequiresTrust);
         outConfig.set("GriefPrevention.Claims.CommandsRequiringAccessTrust", accessTrustSlashCommands);
         outConfig.set("GriefPrevention.Claims.DeliverManuals", config_claims_supplyPlayerManual);
