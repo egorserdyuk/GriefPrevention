@@ -81,6 +81,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Map;
 
 public class GriefPrevention extends JavaPlugin
 {
@@ -156,6 +157,12 @@ public class GriefPrevention extends JavaPlugin
     public boolean config_claims_firedamages;                        //whether fire will damage in claims
 
     public boolean config_claims_lecternReadingRequiresAccessTrust;                    //reading lecterns requires access trust
+
+    public final Map<String, Integer> worldClaimLimits = Map.of(
+        "world", 1,
+        "world_nether", 1,
+        "world_the_end", 0
+    );
 
     public boolean config_spam_enabled;                                //whether or not to monitor for spam
     public int config_spam_loginCooldownSeconds;                    //how long players must wait between logins.  combats login spam.
@@ -547,7 +554,7 @@ public class GriefPrevention extends JavaPlugin
         this.config_claims_initialBlocks = config.getInt("GriefPrevention.Claims.InitialBlocks", 100);
         this.config_claims_blocksAccruedPerHour_default = config.getInt("GriefPrevention.Claims.BlocksAccruedPerHour", 100);
         this.config_claims_blocksAccruedPerHour_default = config.getInt("GriefPrevention.Claims.Claim Blocks Accrued Per Hour.Default", config_claims_blocksAccruedPerHour_default);
-        this.config_claims_maxAccruedBlocks_default = config.getInt("GriefPrevention.Claims.MaxAccruedBlocks", 80000);
+        this.config_claims_maxAccruedBlocks_default = config.getInt("GriefPrevention.Claims.MaxAccruedBlocks", 2097152);
         this.config_claims_maxAccruedBlocks_default = config.getInt("GriefPrevention.Claims.Max Accrued Claim Blocks.Default", this.config_claims_maxAccruedBlocks_default);
         this.config_claims_abandonReturnRatio = config.getDouble("GriefPrevention.Claims.AbandonReturnRatio", 1.0D);
         this.config_claims_automaticClaimsForNewPlayersRadius = config.getInt("GriefPrevention.Claims.AutomaticNewPlayerClaimsRadius", 4);

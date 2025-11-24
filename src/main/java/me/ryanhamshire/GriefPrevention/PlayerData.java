@@ -355,7 +355,14 @@ public class PlayerData
     public int getAccruedClaimBlocksLimit()
     {
         if (this.AccruedClaimBlocksLimit < 0)
+        {
+            Player player = Bukkit.getPlayer(this.playerID);
+            if (player != null && (player.hasPermission("griefprevention.adminclaims") || GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).ignoreClaims))
+            {
+                return Integer.MAX_VALUE;
+            }
             return GriefPrevention.instance.config_claims_maxAccruedBlocks_default;
+        }
         return this.AccruedClaimBlocksLimit;
     }
 

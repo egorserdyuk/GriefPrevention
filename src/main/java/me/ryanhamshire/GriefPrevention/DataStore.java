@@ -859,8 +859,6 @@ public abstract class DataStore
     //does NOT visualize the new claim for any players
     synchronized public CreateClaimResult createClaim(World world, int x1, int x2, int y1, int y2, int z1, int z2, UUID ownerID, Claim parent, Long id, Player creatingPlayer, boolean dryRun)
     {
-        CreateClaimResult result = new CreateClaimResult();
-
         int smallx, bigx, smally, bigy, smallz, bigz;
 
         int worldMinY = world.getMinHeight();
@@ -907,9 +905,7 @@ public abstract class DataStore
             Location greater = parent.getGreaterBoundaryCorner();
             if (smallx < lesser.getX() || smallz < lesser.getZ() || bigx > greater.getX() || bigz > greater.getZ())
             {
-                result.succeeded = false;
-                result.claim = parent;
-                return result;
+                return new CreateClaimResult(CreateClaimResult.Result.OVERLAP, parent);
             }
             smally = sanitizeClaimDepth(parent, smally);
         }
@@ -918,8 +914,7 @@ public abstract class DataStore
         final Location smallerBoundaryCorner = new Location(world, smallx, smally, smallz);
         final Location greaterBoundaryCorner = new Location(world, bigx, bigy, bigz);
         if(!world.getWorldBorder().isInside(smallerBoundaryCorner) || !world.getWorldBorder().isInside(greaterBoundaryCorner)){
-            result.succeeded = false;
-            return result;
+            return new CreateClaimResult(CreateClaimResult.Result.NO_PERMISSION, null);
         }
 
         //creative mode claims always go to bedrock
@@ -941,6 +936,16 @@ public abstract class DataStore
 
         newClaim.parent = parent;
 
+        //check world claim limits for non-admins
+        if (creatingPlayer != null && !creatingPlayer.hasPermission("griefprevention.adminclaims") && !GriefPrevention.instance.dataStore.getPlayerData(creatingPlayer.getUniqueId()).ignoreClaims) {
+            int maxClaims = GriefPrevention.instance.worldClaimLimits.getOrDefault(world.getName(), Integer.MAX_VALUE);
+            long currentClaimsInWorld = GriefPrevention.instance.dataStore.getPlayerData(creatingPlayer.getUniqueId()).getClaims().stream()
+                .filter(c -> c.getLesserBoundaryCorner().getWorld().equals(world)).count();
+            if (currentClaimsInWorld >= maxClaims) {
+                return new CreateClaimResult(CreateClaimResult.Result.TOO_MANY_CLAIMS_IN_WORLD, null);
+            }
+        }
+
         //ensure this new claim won't overlap any existing claims
         ArrayList<Claim> claimsToCheck;
         if (newClaim.parent != null)
@@ -958,36 +963,28 @@ public abstract class DataStore
             if (otherClaim.id != newClaim.id && otherClaim.inDataStore && otherClaim.overlaps(newClaim))
             {
                 //result = fail, return conflicting claim
-                result.succeeded = false;
-                result.claim = otherClaim;
-                return result;
+                return new CreateClaimResult(CreateClaimResult.Result.OVERLAP, otherClaim);
             }
         }
 
         if (dryRun)
         {
             // since this is a dry run, just return the unsaved claim as is.
-            result.succeeded = true;
-            result.claim = newClaim;
-            return result;
+            return new CreateClaimResult(CreateClaimResult.Result.SUCCESS, newClaim);
         }
         assignClaimID(newClaim); // assign a claim ID before calling event, in case a plugin wants to know the ID.
         ClaimCreatedEvent event = new ClaimCreatedEvent(newClaim, creatingPlayer);
         Bukkit.getPluginManager().callEvent(event);
         if (event.isCancelled())
         {
-            result.succeeded = false;
-            result.claim = null;
-            return result;
+            return new CreateClaimResult(CreateClaimResult.Result.NO_PERMISSION, null);
 
         }
         //otherwise add this new claim to the data store to make it effective
         this.addClaim(newClaim, true);
 
         //then return success along with reference to new claim
-        result.succeeded = true;
-        result.claim = newClaim;
-        return result;
+        return new CreateClaimResult(CreateClaimResult.Result.SUCCESS, newClaim);
     }
 
     //saves changes to player data to secondary storage.  MUST be called after you're done making changes, otherwise a reload will lose them

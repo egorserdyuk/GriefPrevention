@@ -2012,7 +2012,11 @@ class PlayerEventHandler implements Listener
                             //if it didn't succeed, tell the player why
                             if (!result.succeeded || result.claim == null)
                             {
-                                if (result.claim != null)
+                                if (result.result == CreateClaimResult.Result.TOO_MANY_CLAIMS_IN_WORLD)
+                                {
+                                    GriefPrevention.sendMessage(player, TextMode.Err, Messages.CreateClaimFailTooManyClaimsInWorld, player.getWorld().getName());
+                                }
+                                else if (result.claim != null)
                                 {
                                     GriefPrevention.sendMessage(player, TextMode.Err, Messages.CreateSubdivisionOverlap);
                                     BoundaryVisualization.visualizeClaim(player, result.claim, VisualizationType.CONFLICT_ZONE, clickedBlock);
@@ -2163,7 +2167,11 @@ class PlayerEventHandler implements Listener
                 //if it didn't succeed, tell the player why
                 if (!result.succeeded || result.claim == null)
                 {
-                    if (result.claim != null)
+                    if (result.result == CreateClaimResult.Result.TOO_MANY_CLAIMS_IN_WORLD)
+                    {
+                        GriefPrevention.sendMessage(player, TextMode.Err, Messages.CreateClaimFailTooManyClaimsInWorld, player.getWorld().getName());
+                    }
+                    else if (result.claim != null)
                     {
                         GriefPrevention.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapShort);
                         BoundaryVisualization.visualizeClaim(player, result.claim, VisualizationType.CONFLICT_ZONE, clickedBlock);

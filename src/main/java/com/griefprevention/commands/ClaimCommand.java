@@ -176,7 +176,11 @@ public class ClaimCommand extends CommandHandler
                 ownerId, null, null, player);
         if (!result.succeeded || result.claim == null)
         {
-            if (result.claim != null)
+            if (result.result == CreateClaimResult.Result.TOO_MANY_CLAIMS_IN_WORLD)
+            {
+                GriefPrevention.sendMessage(player, TextMode.Err, Messages.CreateClaimFailTooManyClaimsInWorld, world.getName());
+            }
+            else if (result.claim != null)
             {
                 GriefPrevention.sendMessage(player, TextMode.Err, Messages.CreateClaimFailOverlapShort);
 

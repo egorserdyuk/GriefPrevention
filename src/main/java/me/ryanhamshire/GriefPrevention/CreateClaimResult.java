@@ -22,10 +22,36 @@ import org.jetbrains.annotations.Nullable;
 
 public class CreateClaimResult
 {
+    public enum Result
+    {
+        SUCCESS,
+        OVERLAP,
+        NO_PERMISSION,
+        TOO_SMALL,
+        TOO_LARGE,
+        TOO_MANY_CLAIMS_IN_WORLD
+    }
+
     //whether or not the creation succeeded (it would fail if the new claim overlapped another existing claim)
     public boolean succeeded;
+
+    public Result result;
 
     //when succeeded, this is a reference to the new claim
     //when failed, this is a reference to the pre-existing, conflicting claim
     public @Nullable Claim claim;
+
+    public CreateClaimResult(boolean succeeded, @Nullable Claim claim)
+    {
+        this.succeeded = succeeded;
+        this.claim = claim;
+        this.result = succeeded ? Result.SUCCESS : Result.OVERLAP; // default
+    }
+
+    public CreateClaimResult(Result result, @Nullable Claim claim)
+    {
+        this.succeeded = result == Result.SUCCESS;
+        this.result = result;
+        this.claim = claim;
+    }
 }
