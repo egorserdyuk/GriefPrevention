@@ -371,6 +371,10 @@ public class Claim
             @NotNull ClaimPermission permission,
             @Nullable Event event)
     {
+        // If owner is online and not admin claim, disable protection.
+        if (!this.isAdminClaim() && GriefPrevention.instance.getServer().getPlayer(this.getOwnerID()) != null) {
+            return null;
+        }
         return checkPermission(player, permission, event, null);
     }
 

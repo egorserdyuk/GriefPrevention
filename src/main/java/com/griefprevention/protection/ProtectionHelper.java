@@ -88,6 +88,11 @@ public final class ProtectionHelper
         // Update cached claim.
         playerData.lastClaim = claim;
 
+        // If claim owner is online (and not admin claim), disable protection.
+        if (!claim.isAdminClaim() && GriefPrevention.instance.getServer().getPlayer(claim.getOwnerID()) != null) {
+            return null;
+        }
+
         // Apply claim rules.
         Supplier<String> cancel = claim.checkPermission(player, permission, trigger);
 
